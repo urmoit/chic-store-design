@@ -1,7 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function Hero() {
+  const { t } = useLanguage();
+
   const scrollToProducts = () => {
     const productsSection = document.getElementById('products');
     productsSection?.scrollIntoView({ behavior: 'smooth' });
@@ -20,16 +23,16 @@ export function Hero() {
 
       <div className="relative z-10 container mx-auto px-4 text-center">
         <span className="inline-block px-4 py-2 mb-6 text-xs font-medium tracking-widest uppercase bg-secondary rounded-full text-muted-foreground">
-          New Collection Available
+          {t('hero.badge')}
         </span>
         
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-none">
-          STAY
-          <span className="block text-accent">CHILL</span>
+          {t('hero.title1')}
+          <span className="block text-accent">{t('hero.title2')}</span>
         </h1>
         
         <p className="max-w-md mx-auto text-lg md:text-xl text-muted-foreground mb-10">
-          Premium streetwear and everyday essentials. Designed for comfort, made for style.
+          {t('hero.description')}
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -38,11 +41,11 @@ export function Hero() {
             className="px-8 py-6 text-base font-semibold group"
             onClick={scrollToProducts}
           >
-            Shop Now
+            {t('hero.shopNow')}
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Button>
           <Button variant="outline" size="lg" className="px-8 py-6 text-base">
-            View Lookbook
+            {t('hero.viewLookbook')}
           </Button>
         </div>
       </div>

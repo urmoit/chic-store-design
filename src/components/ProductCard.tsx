@@ -3,6 +3,7 @@ import { ShopifyProduct } from '@/lib/shopify';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 
 interface ProductCardProps {
@@ -10,6 +11,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { t } = useLanguage();
   const { addItem, isLoading } = useCartStore();
   const node = product.node;
   const image = node.images.edges[0]?.node;
@@ -31,7 +33,7 @@ export function ProductCard({ product }: ProductCardProps) {
       selectedOptions: firstVariant.selectedOptions || []
     });
 
-    toast.success('Added to cart', {
+    toast.success(t('cart.addedToCart'), {
       description: node.title,
       position: 'top-center'
     });
@@ -67,7 +69,7 @@ export function ProductCard({ product }: ProductCardProps) {
             ) : (
               <>
                 <Plus className="h-4 w-4 mr-2" />
-                Add to Cart
+                {t('products.addToCart')}
               </>
             )}
           </Button>
@@ -76,7 +78,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Sold out badge */}
         {firstVariant && !firstVariant.availableForSale && (
           <div className="absolute top-4 left-4 px-3 py-1 bg-background/90 rounded-full text-xs font-medium">
-            Sold Out
+            {t('product.soldOut')}
           </div>
         )}
       </div>

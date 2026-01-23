@@ -4,8 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const CartDrawer = () => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart, getTotalItems, getTotalPrice } = useCartStore();
   const totalItems = getTotalItems();
@@ -37,9 +39,9 @@ export const CartDrawer = () => {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-lg flex flex-col h-full bg-background border-l border-border">
         <SheetHeader className="flex-shrink-0">
-          <SheetTitle className="text-xl">Your Cart</SheetTitle>
+          <SheetTitle className="text-xl">{t('cart.title')}</SheetTitle>
           <SheetDescription>
-            {totalItems === 0 ? "Your cart is empty" : `${totalItems} item${totalItems !== 1 ? 's' : ''} in your cart`}
+            {totalItems === 0 ? t('cart.empty') : `${totalItems} item${totalItems !== 1 ? 's' : ''}`}
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col flex-1 pt-6 min-h-0">
@@ -47,8 +49,8 @@ export const CartDrawer = () => {
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
                 <ShoppingBag className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Your cart is empty</p>
-                <p className="text-sm text-muted-foreground mt-1">Add items to get started</p>
+                <p className="text-muted-foreground">{t('cart.empty')}</p>
+                <p className="text-sm text-muted-foreground mt-1">{t('cart.continueShopping')}</p>
               </div>
             </div>
           ) : (
@@ -109,10 +111,9 @@ export const CartDrawer = () => {
               </div>
               <div className="flex-shrink-0 space-y-4 pt-6 border-t border-border bg-background">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium">Subtotal</span>
+                  <span className="text-lg font-medium">{t('cart.subtotal')}</span>
                   <span className="text-xl font-bold">{items[0]?.price.currencyCode || 'USD'} {totalPrice.toFixed(2)}</span>
                 </div>
-                <p className="text-sm text-muted-foreground">Shipping and taxes calculated at checkout</p>
                 <Button 
                   onClick={handleCheckout} 
                   className="w-full" 
@@ -124,7 +125,7 @@ export const CartDrawer = () => {
                   ) : (
                     <>
                       <ExternalLink className="w-4 h-4 mr-2" />
-                      Checkout
+                      {t('cart.checkout')}
                     </>
                   )}
                 </Button>
