@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProduct } from '@/hooks/useProducts';
 import { useCartStore } from '@/stores/cartStore';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { ArrowLeft, Minus, Plus, Loader2, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ProductPage() {
+  const { t } = useLanguage();
   const { handle } = useParams<{ handle: string }>();
   const { data: product, isLoading, error } = useProduct(handle || '');
   const { addItem, isLoading: cartLoading } = useCartStore();
@@ -45,9 +47,9 @@ export default function ProductPage() {
         <Header />
         <main className="pt-24 pb-20">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-2xl font-bold mb-4">Product not found</h1>
+            <h1 className="text-2xl font-bold mb-4">{t('product.notFound')}</h1>
             <Link to="/" className="text-accent hover:underline">
-              Return to shop
+              {t('product.returnToShop')}
             </Link>
           </div>
         </main>
@@ -99,7 +101,7 @@ export default function ProductPage() {
       selectedOptions: selectedVariant.selectedOptions || []
     });
 
-    toast.success('Added to cart', {
+    toast.success(t('cart.addedToCart'), {
       description: `${product.title} × ${quantity}`,
       position: 'top-center'
     });
@@ -116,7 +118,7 @@ export default function ProductPage() {
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to shop
+            {t('product.backToShop')}
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -200,7 +202,7 @@ export default function ProductPage() {
 
               {/* Quantity */}
               <div className="space-y-3">
-                <label className="text-sm font-medium">Quantity</label>
+                <label className="text-sm font-medium">{t('product.quantity')}</label>
                 <div className="flex items-center gap-3">
                   <Button
                     variant="outline"
@@ -231,20 +233,20 @@ export default function ProductPage() {
                 {cartLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : !selectedVariant?.availableForSale ? (
-                  'Sold Out'
+                  t('product.soldOut')
                 ) : (
                   <>
                     <ShoppingBag className="h-5 w-5 mr-2" />
-                    Add to Cart
+                    {t('products.addToCart')}
                   </>
                 )}
               </Button>
 
               {/* Additional info */}
               <div className="pt-6 border-t border-border space-y-3 text-sm text-muted-foreground">
-                <p>✓ Free shipping on orders over $100</p>
-                <p>✓ 30-day return policy</p>
-                <p>✓ Secure checkout</p>
+                <p>✓ {t('product.freeShipping')}</p>
+                <p>✓ {t('product.returnPolicy')}</p>
+                <p>✓ {t('product.secureCheckout')}</p>
               </div>
             </div>
           </div>
