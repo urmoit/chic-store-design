@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Twitter } from 'lucide-react';
+import { Instagram, Twitter, Mail } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export function Footer() {
@@ -15,7 +15,7 @@ export function Footer() {
             <p className="text-muted-foreground max-w-md mb-6">
               {t('footer.description')}
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-4 mb-4">
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
@@ -23,6 +23,14 @@ export function Footer() {
                 <Twitter className="h-5 w-5" />
               </a>
             </div>
+            {/* Email Contact */}
+            <a 
+              href="mailto:chilli@chillhous.com" 
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Mail className="h-4 w-4" />
+              chilli@chillhous.com
+            </a>
           </div>
 
           {/* Links */}
