@@ -1,88 +1,16 @@
-import { useState, useMemo } from 'react';
 import { useProducts } from '@/hooks/useProducts';
 import { ProductCard } from './ProductCard';
-import { ProductFilters, FilterState } from './ProductFilters';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ShopifyProduct } from '@/lib/shopify';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 export function ProductGrid() {
   const { t } = useLanguage();
-  const { data: products, isLoading, error } = useProducts(50);
-  const [filters, setFilters] = useState<FilterState>({
-    category: 'all',
-    priceRange: 'all',
-    sortBy: 'default',
-  });
-
-  // Extract unique categories from products
-  const categories = useMemo(() => {
-    if (!products) return [];
-    const categorySet = new Set<string>();
-    products.forEach((product: ShopifyProduct) => {
-      const productType = product.node.productType || 'Other';
-      if (productType) categorySet.add(productType);
-    });
-    return Array.from(categorySet).sort();
-  }, [products]);
-
-  // Filter and sort products
-  const filteredProducts = useMemo(() => {
-    if (!products) return [];
-
-    let result = [...products];
-
-    // Filter by category
-    if (filters.category !== 'all') {
-      result = result.filter((product: ShopifyProduct) => {
-        const productType = product.node.productType || 'Other';
-        return productType === filters.category;
-      });
-    }
-
-    // Filter by price range
-    if (filters.priceRange !== 'all') {
-      result = result.filter((product: ShopifyProduct) => {
-        const price = parseFloat(product.node.priceRange.minVariantPrice.amount);
-        switch (filters.priceRange) {
-          case '0-25':
-            return price >= 0 && price < 25;
-          case '25-50':
-            return price >= 25 && price < 50;
-          case '50-100':
-            return price >= 50 && price < 100;
-          case '100+':
-            return price >= 100;
-          default:
-            return true;
-        }
-      });
-    }
-
-    // Sort products
-    switch (filters.sortBy) {
-      case 'price-asc':
-        result.sort((a, b) => 
-          parseFloat(a.node.priceRange.minVariantPrice.amount) - 
-          parseFloat(b.node.priceRange.minVariantPrice.amount)
-        );
-        break;
-      case 'price-desc':
-        result.sort((a, b) => 
-          parseFloat(b.node.priceRange.minVariantPrice.amount) - 
-          parseFloat(a.node.priceRange.minVariantPrice.amount)
-        );
-        break;
-      case 'name-asc':
-        result.sort((a, b) => a.node.title.localeCompare(b.node.title));
-        break;
-      case 'name-desc':
-        result.sort((a, b) => b.node.title.localeCompare(a.node.title));
-        break;
-    }
-
-    return result;
-  }, [products, filters]);
+  // Only fetch 8 products for the homepage (most popular)
+  const { data: products, isLoading, error } = useProducts(8);
 
   if (error) {
     return (
@@ -106,14 +34,13 @@ export function ProductGrid() {
               {t('products.subtitle')}
             </p>
           </div>
+          <Link to="/collections">
+            <Button variant="outline" className="hidden md:flex items-center gap-2">
+              View All
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
         </div>
-
-        {/* Filters */}
-        <ProductFilters 
-          filters={filters} 
-          onFilterChange={setFilters}
-          categories={categories}
-        />
 
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -125,12 +52,22 @@ export function ProductGrid() {
               </div>
             ))}
           </div>
-        ) : filteredProducts && filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product: ShopifyProduct) => (
-              <ProductCard key={product.node.id} product={product} />
-            ))}
-          </div>
+        ) : products && products.length > 0 ? (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {products.map((product: ShopifyProduct) => (
+                <ProductCard key={product.node.id} product={product} />
+              ))}
+            </div>
+            <div className="text-center mt-10 md:hidden">
+              <Link to="/collections">
+                <Button variant="outline" className="items-center gap-2">
+                  View All Products
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </>
         ) : (
           <div className="text-center py-20">
             <p className="text-muted-foreground text-lg">{t('products.noProducts')}</p>

@@ -25,8 +25,8 @@ const translations = {
     'hero.viewLookbook': 'View Lookbook',
     
     // Products
-    'products.title': 'Our Collection',
-    'products.subtitle': 'Explore our latest drops and timeless essentials',
+    'products.title': 'Popular Products',
+    'products.subtitle': 'Our most loved items',
     'products.noProducts': 'No products found',
     'products.addProducts': 'Add products to your Shopify store to see them here.',
     'products.loadError': 'Failed to load products. Please try again later.',
@@ -75,6 +75,7 @@ const translations = {
     'footer.shippingInfo': 'Shipping Info',
     'footer.returns': 'Returns',
     'footer.faq': 'FAQ',
+    'footer.contact': 'Contact',
     'footer.copyright': '© 2026 ChillHous. All rights reserved.',
     'footer.privacy': 'Privacy Policy',
     'footer.terms': 'Terms of Service',
@@ -174,8 +175,8 @@ const translations = {
     'hero.viewLookbook': 'Vaata Lookbooki',
     
     // Products
-    'products.title': 'Meie Kollektsioon',
-    'products.subtitle': 'Avasta meie uusimaid tooteid ja ajatuid klassikaid',
+    'products.title': 'Populaarsed tooted',
+    'products.subtitle': 'Meie kõige armastatumad tooted',
     'products.noProducts': 'Tooteid ei leitud',
     'products.addProducts': 'Lisa tooteid oma Shopify poodi, et neid siin näha.',
     'products.loadError': 'Toodete laadimine ebaõnnestus. Palun proovi hiljem uuesti.',
@@ -224,6 +225,7 @@ const translations = {
     'footer.shippingInfo': 'Tarneinfo',
     'footer.returns': 'Tagastused',
     'footer.faq': 'KKK',
+    'footer.contact': 'Kontakt',
     'footer.copyright': '© 2026 ChillHous. Kõik õigused kaitstud.',
     'footer.privacy': 'Privaatsuspoliitika',
     'footer.terms': 'Kasutustingimused',
