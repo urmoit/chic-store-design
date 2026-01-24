@@ -40,7 +40,6 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">{t('footer.help')}</h4>
             <ul className="space-y-3 text-muted-foreground">
-              <li><Link to="/contact" className="hover:text-foreground transition-colors">{t('footer.contactUs')}</Link></li>
               <li><Link to="/faq" className="hover:text-foreground transition-colors">{t('footer.shippingInfo')}</Link></li>
               <li><Link to="/faq" className="hover:text-foreground transition-colors">{t('footer.returns')}</Link></li>
               <li><Link to="/faq" className="hover:text-foreground transition-colors">{t('footer.faq')}</Link></li>
@@ -53,8 +52,8 @@ export function Footer() {
             {t('footer.copyright')}
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">{t('footer.privacy')}</a>
-            <a href="#" className="hover:text-foreground transition-colors">{t('footer.terms')}</a>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">{t('footer.privacy')}</Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">{t('footer.terms')}</Link>
           </div>
         </div>
       </div>
