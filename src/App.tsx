@@ -8,8 +8,9 @@ import Index from "./pages/Index";
 import ProductPage from "./pages/ProductPage";
 import AboutPage from "./pages/AboutPage";
 import CollectionsPage from "./pages/CollectionsPage";
-import ContactPage from "./pages/ContactPage";
 import FAQPage from "./pages/FAQPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/TermsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,8 +27,9 @@ const App = () => (
             <Route path="/product/:handle" element={<ProductPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/collections" element={<CollectionsPage />} />
-            <Route path="/contact" element={<ContactPage />} />
             <Route path="/faq" element={<FAQPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

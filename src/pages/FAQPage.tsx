@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -9,6 +8,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { Mail } from 'lucide-react';
 
 export default function FAQPage() {
   const { t } = useLanguage();
@@ -60,12 +60,33 @@ export default function FAQPage() {
               ))}
             </Accordion>
 
-            {/* Contact CTA */}
+            {/* Printify Section */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-bold mb-6">{t('faq.printifyTitle')}</h2>
+              <Accordion type="single" collapsible className="space-y-4">
+                <AccordionItem
+                  value="printify"
+                  className="bg-secondary/30 rounded-lg px-6 border-none"
+                >
+                  <AccordionTrigger className="text-left hover:no-underline py-6">
+                    {t('faq.printifyQ')}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-6">
+                    {t('faq.printifyA')}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+
+            {/* Email CTA */}
             <div className="mt-16 text-center bg-secondary/30 rounded-lg p-8">
               <h2 className="text-2xl font-bold mb-4">{t('faq.stillQuestions')}</h2>
-              <Link to="/contact">
-                <Button size="lg">{t('faq.contactUs')}</Button>
-              </Link>
+              <a href="mailto:chilli@chillhous.com">
+                <Button size="lg">
+                  <Mail className="h-4 w-4 mr-2" />
+                  {t('faq.emailUs')}
+                </Button>
+              </a>
             </div>
           </div>
         </section>
