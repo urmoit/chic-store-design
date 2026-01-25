@@ -8,6 +8,7 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { SizeGuide } from '@/components/SizeGuide';
 import { ArrowLeft, Minus, Plus, Loader2, ShoppingBag, Truck, RotateCcw, Shield, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -223,9 +224,12 @@ export default function ProductPage() {
               <div className="space-y-5">
                 {options.map((option: { name: string; values: string[] }) => (
                   <div key={option.name} className="space-y-3">
-                    <label className="text-sm font-semibold uppercase tracking-wide">
-                      {option.name}: <span className="text-muted-foreground font-normal normal-case">{selectedOptions[option.name]}</span>
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold uppercase tracking-wide">
+                        {option.name}: <span className="text-muted-foreground font-normal normal-case">{selectedOptions[option.name]}</span>
+                      </label>
+                      {option.name.toLowerCase() === 'size' && <SizeGuide />}
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {option.values.map((value: string) => (
                         <button
