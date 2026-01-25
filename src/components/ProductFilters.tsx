@@ -19,6 +19,7 @@ interface ProductFiltersProps {
   filters: FilterState;
   onFilterChange: (filters: FilterState) => void;
   categories: string[];
+  hideCategory?: boolean;
 }
 
 const priceRanges = [
@@ -37,7 +38,7 @@ const sortOptions = [
   { value: 'name-desc', labelKey: 'filter.nameZA' },
 ];
 
-export function ProductFilters({ filters, onFilterChange, categories }: ProductFiltersProps) {
+export function ProductFilters({ filters, onFilterChange, categories, hideCategory = false }: ProductFiltersProps) {
   const { t } = useLanguage();
 
   const hasActiveFilters = filters.category !== 'all' || filters.priceRange !== 'all' || filters.sortBy !== 'default';
@@ -47,24 +48,26 @@ export function ProductFilters({ filters, onFilterChange, categories }: ProductF
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4 mb-8">
+    <div className="flex flex-wrap items-center gap-4">
       {/* Category Filter */}
-      <Select
-        value={filters.category}
-        onValueChange={(value) => onFilterChange({ ...filters, category: value })}
-      >
-        <SelectTrigger className="w-[180px] bg-secondary border-border">
-          <SelectValue placeholder={t('filter.category')} />
-        </SelectTrigger>
-        <SelectContent className="bg-popover border-border">
-          <SelectItem value="all">{t('filter.allCategories')}</SelectItem>
-          {categories.map((category) => (
-            <SelectItem key={category} value={category}>
-              {category}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {!hideCategory && (
+        <Select
+          value={filters.category}
+          onValueChange={(value) => onFilterChange({ ...filters, category: value })}
+        >
+          <SelectTrigger className="w-[180px] bg-secondary border-border">
+            <SelectValue placeholder={t('filter.category')} />
+          </SelectTrigger>
+          <SelectContent className="bg-popover border-border">
+            <SelectItem value="all">{t('filter.allCategories')}</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       {/* Price Range Filter */}
       <Select

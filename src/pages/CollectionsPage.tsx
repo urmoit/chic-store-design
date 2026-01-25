@@ -8,6 +8,9 @@ import { useProducts } from '@/hooks/useProducts';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShopifyProduct } from '@/lib/shopify';
+import { Badge } from '@/components/ui/badge';
+import { Grid3X3, LayoutGrid } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function CollectionsPage() {
   const { t } = useLanguage();
@@ -17,17 +20,28 @@ export default function CollectionsPage() {
     priceRange: 'all',
     sortBy: 'default',
   });
+  const [gridSize, setGridSize] = useState<'normal' | 'large'>('normal');
 
   // Extract unique categories from products
   const categories = useMemo(() => {
     if (!products) return [];
     const categorySet = new Set<string>();
     products.forEach((product: ShopifyProduct) => {
-      // Extract category from product type or tags
       const productType = product.node.productType || 'Other';
       if (productType) categorySet.add(productType);
     });
     return Array.from(categorySet).sort();
+  }, [products]);
+
+  // Get category counts
+  const categoryCounts = useMemo(() => {
+    if (!products) return {};
+    const counts: Record<string, number> = { all: products.length };
+    products.forEach((product: ShopifyProduct) => {
+      const productType = product.node.productType || 'Other';
+      counts[productType] = (counts[productType] || 0) + 1;
+    });
+    return counts;
   }, [products]);
 
   // Filter and sort products
@@ -93,30 +107,100 @@ export default function CollectionsPage() {
       <Header />
       <main className="pt-24 pb-20">
         {/* Hero Section */}
-        <section className="py-16 bg-secondary/20">
+        <section className="py-12 bg-gradient-to-b from-secondary/30 to-background">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
               {t('collections.title')}
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               {t('collections.subtitle')}
             </p>
           </div>
         </section>
 
-        {/* Products Section */}
-        <section className="py-12">
+        {/* Category Pills */}
+        <section className="py-6 border-b border-border">
           <div className="container mx-auto px-4">
-            {/* Filters */}
-            <ProductFilters 
-              filters={filters} 
-              onFilterChange={setFilters}
-              categories={categories}
-            />
+            <div className="flex flex-wrap gap-3 justify-center">
+              <button
+                onClick={() => setFilters(prev => ({ ...prev, category: 'all' }))}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+                  filters.category === 'all'
+                    ? 'bg-primary text-primary-foreground shadow-lg'
+                    : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                }`}
+              >
+                All Products
+                <Badge variant="secondary" className="ml-2 bg-background/50">
+                  {categoryCounts.all || 0}
+                </Badge>
+              </button>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setFilters(prev => ({ ...prev, category }))}
+                  className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+                    filters.category === category
+                      ? 'bg-primary text-primary-foreground shadow-lg'
+                      : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  }`}
+                >
+                  {category}
+                  <Badge variant="secondary" className="ml-2 bg-background/50">
+                    {categoryCounts[category] || 0}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Products Section */}
+        <section className="py-8">
+          <div className="container mx-auto px-4">
+            {/* Toolbar */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <p className="text-sm text-muted-foreground">
+                  {filteredProducts.length} {t('collections.items')}
+                </p>
+                {/* Grid Size Toggle */}
+                <div className="hidden md:flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
+                  <Button
+                    variant={gridSize === 'normal' ? 'secondary' : 'ghost'}
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setGridSize('normal')}
+                  >
+                    <Grid3X3 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={gridSize === 'large' ? 'secondary' : 'ghost'}
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setGridSize('large')}
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Filters */}
+              <ProductFilters 
+                filters={filters} 
+                onFilterChange={setFilters}
+                categories={categories}
+                hideCategory={true}
+              />
+            </div>
 
             {/* Products Grid */}
             {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className={`grid gap-6 ${
+                gridSize === 'large' 
+                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                  : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+              }`}>
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="space-y-4">
                     <Skeleton className="aspect-[3/4] rounded-lg" />
@@ -130,19 +214,25 @@ export default function CollectionsPage() {
                 <p className="text-destructive">{t('products.loadError')}</p>
               </div>
             ) : filteredProducts.length > 0 ? (
-              <>
-                <p className="text-sm text-muted-foreground mb-6">
-                  {filteredProducts.length} {t('collections.items')}
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {filteredProducts.map((product: ShopifyProduct) => (
-                    <ProductCard key={product.node.id} product={product} />
-                  ))}
-                </div>
-              </>
+              <div className={`grid gap-6 ${
+                gridSize === 'large' 
+                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                  : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+              }`}>
+                {filteredProducts.map((product: ShopifyProduct) => (
+                  <ProductCard key={product.node.id} product={product} />
+                ))}
+              </div>
             ) : (
               <div className="text-center py-20">
                 <p className="text-muted-foreground text-lg">{t('products.noProducts')}</p>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => setFilters({ category: 'all', priceRange: 'all', sortBy: 'default' })}
+                >
+                  Clear Filters
+                </Button>
               </div>
             )}
           </div>
