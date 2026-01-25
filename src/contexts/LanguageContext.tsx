@@ -63,6 +63,16 @@ const translations = {
     'product.freeShipping': 'Free shipping on orders over $100',
     'product.returnPolicy': '30-day return policy',
     'product.secureCheckout': 'Secure checkout',
+    'product.sizeGuide': 'Size Guide',
+    'product.sizeGuideDescription': 'Find your perfect fit with our size chart',
+    'product.size': 'Size',
+    'product.chest': 'Chest',
+    'product.waist': 'Waist',
+    'product.hips': 'Hips',
+    'product.howToMeasure': 'How to Measure',
+    'product.chestMeasure': 'Measure around the fullest part of your chest',
+    'product.waistMeasure': 'Measure around your natural waistline',
+    'product.hipsMeasure': 'Measure around the fullest part of your hips',
     
     // Footer
     'footer.description': 'Premium streetwear and everyday essentials. Designed for comfort, made for style. Join the movement.',
@@ -213,6 +223,16 @@ const translations = {
     'product.freeShipping': 'Tasuta tarne tellimustel üle 100€',
     'product.returnPolicy': '30-päevane tagastusõigus',
     'product.secureCheckout': 'Turvaline maksmine',
+    'product.sizeGuide': 'Suuruste juhend',
+    'product.sizeGuideDescription': 'Leia oma täiuslik suurus meie suuruste tabeliga',
+    'product.size': 'Suurus',
+    'product.chest': 'Rindkere',
+    'product.waist': 'Vöökoht',
+    'product.hips': 'Puusad',
+    'product.howToMeasure': 'Kuidas mõõta',
+    'product.chestMeasure': 'Mõõda ümber rindkere täidlaseima osa',
+    'product.waistMeasure': 'Mõõda ümber oma loomuliku vöökoha',
+    'product.hipsMeasure': 'Mõõda ümber puusade täidlaseima osa',
     
     // Footer
     'footer.description': 'Premium tänavamoee ja igapäevased riided. Disainitud mugavuseks, loodud stiiliks. Liitu liikumisega.',
