@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Minus, Plus, Loader2, ShoppingBag, Truck, RotateCcw, Shield, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
-const SHOPIFY_STORE_DOMAIN = 'aeuy9r-dc.myshopify.com';
+const SHOP_APP_STORE_URL = 'https://shop.app/m/04a7c9zdw5?dynamicFilterVAvailability=%7B"available"%3Atrue%7D&sortBy=MOST_SALES';
 
 // Shop App Icon
 const ShopAppIcon = ({ className }: { className?: string }) => (
@@ -19,6 +19,13 @@ const ShopAppIcon = ({ className }: { className?: string }) => (
     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
   </svg>
 );
+
+// Get first sentence from description
+const getFirstSentence = (text: string): string => {
+  if (!text) return '';
+  const match = text.match(/^[^.!?]*[.!?]/);
+  return match ? match[0] : text.slice(0, 100) + '...';
+};
 
 export default function ProductPage() {
   const { t } = useLanguage();
@@ -78,6 +85,7 @@ export default function ProductPage() {
   const images = product.images?.edges || [];
   const variants = product.variants?.edges || [];
   const options = product.options || [];
+  const summaryDescription = getFirstSentence(product.description || '');
 
   // Find matching variant based on selected options
   const findMatchingVariant = () => {
@@ -125,9 +133,7 @@ export default function ProductPage() {
   };
 
   const handleBuyWithShopApp = () => {
-    // Open Shop app universal link
-    const shopAppUrl = `https://shop.app/search?q=${encodeURIComponent(product.title)}&shop=${SHOPIFY_STORE_DOMAIN}`;
-    window.open(shopAppUrl, '_blank');
+    window.open(SHOP_APP_STORE_URL, '_blank');
   };
 
   return (
@@ -191,7 +197,7 @@ export default function ProductPage() {
               )}
             </div>
 
-            {/* Product info */}
+            {/* Product info - Title, Summary, Options, Actions */}
             <div className="space-y-6">
               <div>
                 {product.productType && (
@@ -202,16 +208,16 @@ export default function ProductPage() {
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
                   {product.title}
                 </h1>
-                <p className="text-3xl font-bold text-primary">
+                <p className="text-3xl font-bold text-primary mb-4">
                   {selectedVariant?.price.currencyCode} {parseFloat(selectedVariant?.price.amount || '0').toFixed(2)}
                 </p>
+                {/* Summary description - 1 sentence */}
+                {summaryDescription && (
+                  <p className="text-muted-foreground text-lg">
+                    {summaryDescription}
+                  </p>
+                )}
               </div>
-
-              {product.description && (
-                <p className="text-muted-foreground leading-relaxed text-lg">
-                  {product.description}
-                </p>
-              )}
 
               {/* Options */}
               <div className="space-y-5">
@@ -331,6 +337,18 @@ export default function ProductPage() {
               </div>
             </div>
           </div>
+
+          {/* Full Description - Below images */}
+          {product.description && (
+            <section className="mt-16 pt-12 border-t border-border">
+              <h2 className="text-2xl font-bold mb-6">Product Details</h2>
+              <div className="prose prose-lg max-w-3xl text-muted-foreground">
+                <p className="leading-relaxed whitespace-pre-line">
+                  {product.description}
+                </p>
+              </div>
+            </section>
+          )}
         </div>
       </main>
       <Footer />
