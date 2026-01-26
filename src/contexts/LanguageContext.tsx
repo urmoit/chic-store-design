@@ -14,6 +14,15 @@ const translations = {
     'nav.home': 'Home',
     'nav.collections': 'Collections',
     'nav.about': 'About',
+    'nav.language': 'Language',
+    
+    // Search
+    'search.title': 'Search',
+    'search.placeholder': 'Search products...',
+    'search.hint': 'Press ⌘K to open search anytime',
+    'search.loading': 'Loading...',
+    'search.startTyping': 'Start typing to search products',
+    'search.noResults': 'No products found',
     'nav.faq': 'FAQ',
     
     // Hero
@@ -175,6 +184,15 @@ const translations = {
     'nav.collections': 'Kollektsioonid',
     'nav.about': 'Meist',
     'nav.faq': 'KKK',
+    'nav.language': 'Keel',
+    
+    // Search
+    'search.title': 'Otsi',
+    'search.placeholder': 'Otsi tooteid...',
+    'search.hint': 'Vajuta ⌘K otsingu avamiseks',
+    'search.loading': 'Laadimine...',
+    'search.startTyping': 'Alusta tippimist toodete otsimiseks',
+    'search.noResults': 'Tooteid ei leitud',
     
     // Hero
     'hero.badge': 'Uus kollektsioon saadaval',
