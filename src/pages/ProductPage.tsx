@@ -28,6 +28,88 @@ const getFirstSentence = (text: string): string => {
   return match ? match[0] : text.slice(0, 100) + '...';
 };
 
+// Parse and format product description into sections
+const formatProductDescription = (text: string) => {
+  if (!text) return null;
+  
+  // Common section patterns to split on
+  const sectionPatterns = [
+    /Product features\s*[-–:]/gi,
+    /Care instructions\s*[-–:]/gi,
+    /Product information\s*[-–:]/gi,
+    /Warnings?\s*[-–:]/gi,
+    /Hazard\s*[-–:]/gi,
+    /Materials?\s*[-–:]/gi,
+  ];
+  
+  // Split by " - " to create bullet points for features
+  const formatBulletPoints = (section: string) => {
+    // Check if section has multiple " - " separated items
+    if (section.includes(' - ')) {
+      const parts = section.split(' - ').filter(p => p.trim());
+      if (parts.length > 2) {
+        return parts;
+      }
+    }
+    return null;
+  };
+  
+  // Try to split into main description and features/care
+  const sections: { title: string; content: string; bullets?: string[] }[] = [];
+  
+  // Check for "Product features" section
+  const featuresMatch = text.match(/Product features\s*[-–:]?\s*(.*?)(?=Care instructions|Product information|Warnings|Hazard|$)/is);
+  const careMatch = text.match(/Care instructions\s*[-–:]?\s*(.*?)(?=Product information|Warnings|Hazard|Non-chlorine|$)/is);
+  const infoMatch = text.match(/Product information\s*[-–:]?\s*(.*?)(?=Warnings|Hazard|$)/is);
+  
+  // Get main description (before Product features)
+  const mainDescMatch = text.match(/^(.*?)(?=Product features|Care instructions|Product information|$)/is);
+  
+  if (mainDescMatch && mainDescMatch[1].trim()) {
+    sections.push({
+      title: 'Description',
+      content: mainDescMatch[1].trim()
+    });
+  }
+  
+  if (featuresMatch && featuresMatch[1].trim()) {
+    const featuresText = featuresMatch[1].trim();
+    const bullets = formatBulletPoints(featuresText);
+    sections.push({
+      title: 'Features',
+      content: bullets ? '' : featuresText,
+      bullets: bullets || undefined
+    });
+  }
+  
+  if (careMatch && careMatch[1].trim()) {
+    const careText = careMatch[1].trim();
+    const bullets = formatBulletPoints(careText);
+    sections.push({
+      title: 'Care Instructions',
+      content: bullets ? '' : careText,
+      bullets: bullets || undefined
+    });
+  }
+  
+  if (infoMatch && infoMatch[1].trim()) {
+    sections.push({
+      title: 'Product Information',
+      content: infoMatch[1].trim()
+    });
+  }
+  
+  // If no sections were found, just return the whole text as one section
+  if (sections.length === 0) {
+    sections.push({
+      title: 'Description',
+      content: text
+    });
+  }
+  
+  return sections;
+};
+
 export default function ProductPage() {
   const { t } = useLanguage();
   const { handle } = useParams<{ handle: string }>();
@@ -345,11 +427,30 @@ export default function ProductPage() {
           {/* Full Description - Below images */}
           {product.description && (
             <section className="mt-16 pt-12 border-t border-border">
-              <h2 className="text-2xl font-bold mb-6">Product Details</h2>
-              <div className="prose prose-lg max-w-3xl text-muted-foreground">
-                <p className="leading-relaxed whitespace-pre-line">
-                  {product.description}
-                </p>
+              <h2 className="text-2xl font-bold mb-8">Product Details</h2>
+              <div className="max-w-4xl space-y-8">
+                {formatProductDescription(product.description)?.map((section, index) => (
+                  <div key={index} className="space-y-3">
+                    {section.title !== 'Description' && (
+                      <h3 className="text-lg font-semibold text-foreground">{section.title}</h3>
+                    )}
+                    {section.content && (
+                      <p className="text-muted-foreground leading-relaxed text-base">
+                        {section.content}
+                      </p>
+                    )}
+                    {section.bullets && section.bullets.length > 0 && (
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {section.bullets.map((bullet, i) => (
+                          <li key={i} className="flex items-start gap-2 text-muted-foreground">
+                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                            <span className="text-sm">{bullet.trim()}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
               </div>
             </section>
           )}
