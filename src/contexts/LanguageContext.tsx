@@ -82,6 +82,7 @@ const translations = {
     'product.chestMeasure': 'Measure around the fullest part of your chest',
     'product.waistMeasure': 'Measure around your natural waistline',
     'product.hipsMeasure': 'Measure around the fullest part of your hips',
+    'product.relatedProducts': 'You May Also Like',
     
     // Footer
     'footer.description': 'Premium streetwear and everyday essentials. Designed for comfort, made for style. Join the movement.',
@@ -251,6 +252,7 @@ const translations = {
     'product.chestMeasure': 'Mõõda ümber rindkere täidlaseima osa',
     'product.waistMeasure': 'Mõõda ümber oma loomuliku vöökoha',
     'product.hipsMeasure': 'Mõõda ümber puusade täidlaseima osa',
+    'product.relatedProducts': 'Sulle võib meeldida ka',
     
     // Footer
     'footer.description': 'Premium tänavamoee ja igapäevased riided. Disainitud mugavuseks, loodud stiiliks. Liitu liikumisega.',

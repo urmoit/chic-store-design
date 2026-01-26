@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { SizeGuide } from '@/components/SizeGuide';
+import { RelatedProducts } from '@/components/RelatedProducts';
 import { ArrowLeft, Minus, Plus, Loader2, ShoppingBag, Truck, RotateCcw, Shield, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -454,6 +455,12 @@ export default function ProductPage() {
               </div>
             </section>
           )}
+
+          {/* Related Products */}
+          <RelatedProducts 
+            currentProductHandle={handle || ''} 
+            productType={product.productType} 
+          />
         </div>
       </main>
       <Footer />
