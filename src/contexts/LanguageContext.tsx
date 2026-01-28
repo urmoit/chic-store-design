@@ -89,6 +89,13 @@ const translations = {
     'wishlist.removed': 'Removed from wishlist',
     'wishlist.addToWishlist': 'Add to Wishlist',
     'wishlist.inWishlist': 'In Wishlist',
+    'wishlist.title': 'My Wishlist',
+    'wishlist.item': 'item',
+    'wishlist.items': 'items',
+    'wishlist.clearAll': 'Clear All',
+    'wishlist.empty': 'Your wishlist is empty',
+    'wishlist.emptyDescription': 'Save your favorite items to your wishlist and they will show up here.',
+    'wishlist.startShopping': 'Start Shopping',
     
     // Footer
     'footer.description': 'Premium streetwear and everyday essentials. Designed for comfort, made for style. Join the movement.',
@@ -265,6 +272,13 @@ const translations = {
     'wishlist.removed': 'Eemaldatud soovinimekirjast',
     'wishlist.addToWishlist': 'Lisa soovinimekirja',
     'wishlist.inWishlist': 'Soovinimekirjas',
+    'wishlist.title': 'Minu soovinimekiri',
+    'wishlist.item': 'toode',
+    'wishlist.items': 'toodet',
+    'wishlist.clearAll': 'Tühjenda kõik',
+    'wishlist.empty': 'Sinu soovinimekiri on tühi',
+    'wishlist.emptyDescription': 'Salvesta oma lemmiktooted soovinimekirja ja need ilmuvad siia.',
+    'wishlist.startShopping': 'Alusta ostlemist',
     
     // Footer
     'footer.description': 'Premium tänavamoee ja igapäevased riided. Disainitud mugavuseks, loodud stiiliks. Liitu liikumisega.',

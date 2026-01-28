@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { SizeGuide } from '@/components/SizeGuide';
 import { RelatedProducts } from '@/components/RelatedProducts';
 import { WishlistButton } from '@/components/WishlistButton';
+import { ImageZoom } from '@/components/ImageZoom';
 import { ArrowLeft, Minus, Plus, Loader2, ShoppingBag, Truck, RotateCcw, Shield, ExternalLink, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -223,12 +224,12 @@ export default function ProductPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
             {/* Image gallery - Takes 7 columns */}
             <div className="lg:col-span-7 space-y-4">
-              <div className="aspect-square bg-secondary/30 rounded-3xl overflow-hidden relative group">
+              <div className="aspect-square bg-secondary/30 rounded-3xl overflow-hidden relative">
                 {currentImage ? (
-                  <img
+                  <ImageZoom
                     src={currentImage.url}
                     alt={currentImage.altText || product.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground">
@@ -236,7 +237,7 @@ export default function ProductPage() {
                   </div>
                 )}
                 {selectedVariant?.availableForSale === false && (
-                  <Badge variant="destructive" className="absolute top-6 left-6 px-4 py-1.5 text-sm">
+                  <Badge variant="destructive" className="absolute top-6 left-6 px-4 py-1.5 text-sm z-10">
                     Sold Out
                   </Badge>
                 )}
