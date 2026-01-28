@@ -84,6 +84,12 @@ const translations = {
     'product.hipsMeasure': 'Measure around the fullest part of your hips',
     'product.relatedProducts': 'You May Also Like',
     
+    // Wishlist
+    'wishlist.added': 'Added to wishlist',
+    'wishlist.removed': 'Removed from wishlist',
+    'wishlist.addToWishlist': 'Add to Wishlist',
+    'wishlist.inWishlist': 'In Wishlist',
+    
     // Footer
     'footer.description': 'Premium streetwear and everyday essentials. Designed for comfort, made for style. Join the movement.',
     'footer.shop': 'Shop',
@@ -253,6 +259,12 @@ const translations = {
     'product.waistMeasure': 'Mõõda ümber oma loomuliku vöökoha',
     'product.hipsMeasure': 'Mõõda ümber puusade täidlaseima osa',
     'product.relatedProducts': 'Sulle võib meeldida ka',
+    
+    // Wishlist
+    'wishlist.added': 'Lisatud soovinimekirja',
+    'wishlist.removed': 'Eemaldatud soovinimekirjast',
+    'wishlist.addToWishlist': 'Lisa soovinimekirja',
+    'wishlist.inWishlist': 'Soovinimekirjas',
     
     // Footer
     'footer.description': 'Premium tänavamoee ja igapäevased riided. Disainitud mugavuseks, loodud stiiliks. Liitu liikumisega.',

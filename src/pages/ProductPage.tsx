@@ -10,7 +10,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { SizeGuide } from '@/components/SizeGuide';
 import { RelatedProducts } from '@/components/RelatedProducts';
-import { ArrowLeft, Minus, Plus, Loader2, ShoppingBag, Truck, RotateCcw, Shield, ExternalLink } from 'lucide-react';
+import { WishlistButton } from '@/components/WishlistButton';
+import { ArrowLeft, Minus, Plus, Loader2, ShoppingBag, Truck, RotateCcw, Shield, ExternalLink, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SHOP_APP_STORE_URL = 'https://shop.app/m/04a7c9zdw5?dynamicFilterVAvailability=%7B"available"%3Atrue%7D&sortBy=MOST_SALES';
@@ -22,30 +23,13 @@ const ShopAppIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Get first sentence from description
-const getFirstSentence = (text: string): string => {
-  if (!text) return '';
-  const match = text.match(/^[^.!?]*[.!?]/);
-  return match ? match[0] : text.slice(0, 100) + '...';
-};
-
 // Parse and format product description into sections
 const formatProductDescription = (text: string) => {
   if (!text) return null;
   
-  // Common section patterns to split on
-  const sectionPatterns = [
-    /Product features\s*[-–:]/gi,
-    /Care instructions\s*[-–:]/gi,
-    /Product information\s*[-–:]/gi,
-    /Warnings?\s*[-–:]/gi,
-    /Hazard\s*[-–:]/gi,
-    /Materials?\s*[-–:]/gi,
-  ];
+  const sections: { title: string; content: string; bullets?: string[] }[] = [];
   
-  // Split by " - " to create bullet points for features
   const formatBulletPoints = (section: string) => {
-    // Check if section has multiple " - " separated items
     if (section.includes(' - ')) {
       const parts = section.split(' - ').filter(p => p.trim());
       if (parts.length > 2) {
@@ -55,20 +39,14 @@ const formatProductDescription = (text: string) => {
     return null;
   };
   
-  // Try to split into main description and features/care
-  const sections: { title: string; content: string; bullets?: string[] }[] = [];
-  
-  // Check for "Product features" section
   const featuresMatch = text.match(/Product features\s*[-–:]?\s*(.*?)(?=Care instructions|Product information|Warnings|Hazard|$)/is);
   const careMatch = text.match(/Care instructions\s*[-–:]?\s*(.*?)(?=Product information|Warnings|Hazard|Non-chlorine|$)/is);
   const infoMatch = text.match(/Product information\s*[-–:]?\s*(.*?)(?=Warnings|Hazard|$)/is);
-  
-  // Get main description (before Product features)
   const mainDescMatch = text.match(/^(.*?)(?=Product features|Care instructions|Product information|$)/is);
   
   if (mainDescMatch && mainDescMatch[1].trim()) {
     sections.push({
-      title: 'Description',
+      title: 'About This Product',
       content: mainDescMatch[1].trim()
     });
   }
@@ -100,10 +78,9 @@ const formatProductDescription = (text: string) => {
     });
   }
   
-  // If no sections were found, just return the whole text as one section
   if (sections.length === 0) {
     sections.push({
-      title: 'Description',
+      title: 'About This Product',
       content: text
     });
   }
@@ -169,9 +146,7 @@ export default function ProductPage() {
   const images = product.images?.edges || [];
   const variants = product.variants?.edges || [];
   const options = product.options || [];
-  const summaryDescription = getFirstSentence(product.description || '');
 
-  // Find matching variant based on selected options
   const findMatchingVariant = () => {
     if (options.length === 0) return variants[0]?.node;
     
@@ -189,7 +164,6 @@ export default function ProductPage() {
     setSelectedOptions(prev => ({ ...prev, [optionName]: value }));
   };
 
-  // Initialize selected options on first render
   if (options.length > 0 && Object.keys(selectedOptions).length === 0) {
     const initialOptions: Record<string, string> = {};
     options.forEach((opt: { name: string; values: string[] }) => {
@@ -220,6 +194,16 @@ export default function ProductPage() {
     window.open(SHOP_APP_STORE_URL, '_blank');
   };
 
+  const wishlistProduct = {
+    id: product.id,
+    handle: product.handle,
+    title: product.title,
+    imageUrl: images[0]?.node?.url,
+    price: selectedVariant?.price || product.priceRange?.minVariantPrice
+  };
+
+  const descriptionSections = formatProductDescription(product.description || '');
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -236,15 +220,15 @@ export default function ProductPage() {
             </Link>
           </nav>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Image gallery */}
-            <div className="space-y-4">
-              <div className="aspect-square bg-secondary/30 rounded-2xl overflow-hidden relative group">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+            {/* Image gallery - Takes 7 columns */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="aspect-square bg-secondary/30 rounded-3xl overflow-hidden relative group">
                 {currentImage ? (
                   <img
                     src={currentImage.url}
                     alt={currentImage.altText || product.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground">
@@ -252,7 +236,7 @@ export default function ProductPage() {
                   </div>
                 )}
                 {selectedVariant?.availableForSale === false && (
-                  <Badge variant="destructive" className="absolute top-4 left-4">
+                  <Badge variant="destructive" className="absolute top-6 left-6 px-4 py-1.5 text-sm">
                     Sold Out
                   </Badge>
                 )}
@@ -264,7 +248,7 @@ export default function ProductPage() {
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
+                      className={`w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all ${
                         index === selectedImageIndex 
                           ? 'border-primary ring-2 ring-primary/20' 
                           : 'border-transparent hover:border-muted-foreground/30'
@@ -281,35 +265,49 @@ export default function ProductPage() {
               )}
             </div>
 
-            {/* Product info - Title, Summary, Options, Actions */}
-            <div className="space-y-6">
-              <div>
+            {/* Product info - Takes 5 columns */}
+            <div className="lg:col-span-5 space-y-8">
+              {/* Header section */}
+              <div className="space-y-4">
                 {product.productType && (
-                  <Badge variant="secondary" className="mb-3">
+                  <Badge variant="secondary" className="text-xs uppercase tracking-wider">
                     {product.productType}
                   </Badge>
                 )}
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
                   {product.title}
                 </h1>
-                <p className="text-3xl font-bold text-primary mb-4">
-                  {selectedVariant?.price.currencyCode} {parseFloat(selectedVariant?.price.amount || '0').toFixed(2)}
-                </p>
-                {/* Summary description - 1 sentence */}
-                {summaryDescription && (
-                  <p className="text-muted-foreground text-lg">
-                    {summaryDescription}
-                  </p>
-                )}
               </div>
 
+              {/* Price section - Prominent placement */}
+              <div className="flex items-baseline gap-4 py-4 border-y border-border">
+                <span className="text-4xl font-bold text-foreground">
+                  {selectedVariant?.price.currencyCode} {parseFloat(selectedVariant?.price.amount || '0').toFixed(2)}
+                </span>
+                {selectedVariant?.availableForSale && (
+                  <Badge variant="outline" className="text-xs bg-accent/10 text-accent border-accent/30">
+                    In Stock
+                  </Badge>
+                )}
+              </div>
+              {/* Short description */}
+              {descriptionSections && descriptionSections[0] && (
+                <p className="text-muted-foreground text-lg leading-relaxed">
+                  {descriptionSections[0].content.slice(0, 150)}
+                  {descriptionSections[0].content.length > 150 ? '...' : ''}
+                </p>
+              )}
+
               {/* Options */}
-              <div className="space-y-5">
+              <div className="space-y-6">
                 {options.map((option: { name: string; values: string[] }) => (
                   <div key={option.name} className="space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-sm font-semibold uppercase tracking-wide">
-                        {option.name}: <span className="text-muted-foreground font-normal normal-case">{selectedOptions[option.name]}</span>
+                        {option.name}
+                        <span className="ml-2 text-muted-foreground font-normal normal-case">
+                          — {selectedOptions[option.name]}
+                        </span>
                       </label>
                       {option.name.toLowerCase() === 'size' && <SizeGuide />}
                     </div>
@@ -318,9 +316,9 @@ export default function ProductPage() {
                         <button
                           key={value}
                           onClick={() => handleOptionChange(option.name, value)}
-                          className={`px-5 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+                          className={`px-5 py-3 rounded-xl border text-sm font-medium transition-all ${
                             selectedOptions[option.name] === value
-                              ? 'border-primary bg-primary text-primary-foreground shadow-lg'
+                              ? 'border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/20'
                               : 'border-border bg-secondary/50 hover:border-muted-foreground hover:bg-secondary'
                           }`}
                         >
@@ -335,21 +333,21 @@ export default function ProductPage() {
               {/* Quantity */}
               <div className="space-y-3">
                 <label className="text-sm font-semibold uppercase tracking-wide">{t('product.quantity')}</label>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1 bg-secondary/50 rounded-xl p-1 w-fit">
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    className="h-11 w-11 rounded-lg"
+                    className="h-10 w-10 rounded-lg"
                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-14 text-center font-semibold text-lg">{quantity}</span>
+                  <span className="w-12 text-center font-semibold text-lg">{quantity}</span>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    className="h-11 w-11 rounded-lg"
+                    className="h-10 w-10 rounded-lg"
                     onClick={() => setQuantity(q => q + 1)}
                   >
                     <Plus className="h-4 w-4" />
@@ -358,30 +356,33 @@ export default function ProductPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-3 pt-2">
-                <Button
-                  size="lg"
-                  className="w-full py-6 text-base font-semibold rounded-xl"
-                  onClick={handleAddToCart}
-                  disabled={cartLoading || !selectedVariant?.availableForSale}
-                >
-                  {cartLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : !selectedVariant?.availableForSale ? (
-                    t('product.soldOut')
-                  ) : (
-                    <>
-                      <ShoppingBag className="h-5 w-5 mr-2" />
-                      {t('products.addToCart')}
-                    </>
-                  )}
-                </Button>
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <Button
+                    size="lg"
+                    className="flex-1 py-7 text-base font-semibold rounded-xl"
+                    onClick={handleAddToCart}
+                    disabled={cartLoading || !selectedVariant?.availableForSale}
+                  >
+                    {cartLoading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : !selectedVariant?.availableForSale ? (
+                      t('product.soldOut')
+                    ) : (
+                      <>
+                        <ShoppingBag className="h-5 w-5 mr-2" />
+                        {t('products.addToCart')}
+                      </>
+                    )}
+                  </Button>
+                  <WishlistButton product={wishlistProduct} />
+                </div>
 
                 {/* Shop App Button */}
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full py-6 text-base font-semibold rounded-xl border-2"
+                  className="w-full py-7 text-base font-semibold rounded-xl border-2"
                   onClick={handleBuyWithShopApp}
                 >
                   <ShopAppIcon className="h-5 w-5 mr-2" />
@@ -390,68 +391,62 @@ export default function ProductPage() {
                 </Button>
               </div>
 
-              {/* Trust Badges */}
-              <div className="pt-6 border-t border-border">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="p-2 bg-secondary rounded-lg">
-                      <Truck className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{t('product.freeShipping')}</p>
-                      <p className="text-xs text-muted-foreground">On all orders</p>
-                    </div>
+              {/* Trust Badges - Compact */}
+              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border">
+                <div className="text-center space-y-2">
+                  <div className="mx-auto w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                    <Truck className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="p-2 bg-secondary rounded-lg">
-                      <RotateCcw className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{t('product.returnPolicy')}</p>
-                      <p className="text-xs text-muted-foreground">Easy returns</p>
-                    </div>
+                  <p className="text-xs font-medium">{t('product.freeShipping')}</p>
+                </div>
+                <div className="text-center space-y-2">
+                  <div className="mx-auto w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                    <RotateCcw className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="p-2 bg-secondary rounded-lg">
-                      <Shield className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{t('product.secureCheckout')}</p>
-                      <p className="text-xs text-muted-foreground">SSL encrypted</p>
-                    </div>
+                  <p className="text-xs font-medium">{t('product.returnPolicy')}</p>
+                </div>
+                <div className="text-center space-y-2">
+                  <div className="mx-auto w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                    <Shield className="h-5 w-5 text-primary" />
                   </div>
+                  <p className="text-xs font-medium">{t('product.secureCheckout')}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Full Description - Below images */}
-          {product.description && (
-            <section className="mt-16 pt-12 border-t border-border">
-              <h2 className="text-2xl font-bold mb-8">Product Details</h2>
-              <div className="max-w-4xl space-y-8">
-                {formatProductDescription(product.description)?.map((section, index) => (
-                  <div key={index} className="space-y-3">
-                    {section.title !== 'Description' && (
-                      <h3 className="text-lg font-semibold text-foreground">{section.title}</h3>
-                    )}
-                    {section.content && (
-                      <p className="text-muted-foreground leading-relaxed text-base">
-                        {section.content}
-                      </p>
-                    )}
-                    {section.bullets && section.bullets.length > 0 && (
-                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {section.bullets.map((bullet, i) => (
-                          <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-                            <span className="text-sm">{bullet.trim()}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
+          {/* Full Description Section - Full width below */}
+          {descriptionSections && descriptionSections.length > 0 && (
+            <section className="mt-20 pt-16 border-t border-border">
+              <div className="max-w-4xl">
+                <h2 className="text-3xl font-bold mb-12">Product Details</h2>
+                <div className="space-y-12">
+                  {descriptionSections.map((section, index) => (
+                    <div key={index} className="space-y-4">
+                      <h3 className="text-xl font-semibold text-foreground flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-accent" />
+                        </div>
+                        {section.title}
+                      </h3>
+                      {section.content && (
+                        <p className="text-muted-foreground leading-relaxed text-lg pl-11">
+                          {section.content}
+                        </p>
+                      )}
+                      {section.bullets && section.bullets.length > 0 && (
+                        <ul className="pl-11 space-y-3">
+                          {section.bullets.map((bullet, i) => (
+                            <li key={i} className="flex items-start gap-3 text-muted-foreground">
+                              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-accent flex-shrink-0" />
+                              <span className="text-base leading-relaxed">{bullet.trim()}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </section>
           )}
