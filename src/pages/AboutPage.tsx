@@ -1,10 +1,12 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { Heart, Leaf, Users } from 'lucide-react';
 
 export default function AboutPage() {
   const { t } = useLanguage();
+  usePageTitle('About');
 
   const values = [
     {

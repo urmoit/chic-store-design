@@ -1,9 +1,11 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function TermsPage() {
   const { t } = useLanguage();
+  usePageTitle('Terms of Service');
 
   return (
     <div className="min-h-screen bg-background">

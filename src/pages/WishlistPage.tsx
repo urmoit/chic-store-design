@@ -4,9 +4,11 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { Heart, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 
 export default function WishlistPage() {
+  usePageTitle('Wishlist');
   const { t } = useLanguage();
   const { items, removeItem, clearWishlist } = useWishlistStore();
 
