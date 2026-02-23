@@ -251,12 +251,18 @@ export async function fetchProductByHandle(handle: string) {
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
-    // Always use the .myshopify.com permanent domain for checkout
-    // because the custom domain may point to Lovable, not Shopify
-    url.hostname = SHOPIFY_STORE_PERMANENT_DOMAIN;
+    // If the checkout URL uses the custom domain (which now points to Lovable),
+    // swap it to the .myshopify.com permanent domain.
+    // Shopify checkout paths (/cart/c/, /checkouts/) are NOT redirected by Shopify
+    // even when the storefront has a primary custom domain.
+    if (url.hostname !== SHOPIFY_STORE_PERMANENT_DOMAIN) {
+      url.hostname = SHOPIFY_STORE_PERMANENT_DOMAIN;
+    }
     url.searchParams.set('channel', 'online_store');
+    console.log('[Shopify Checkout] Original URL:', checkoutUrl, '→ Formatted:', url.toString());
     return url.toString();
   } catch {
+    console.error('[Shopify Checkout] Failed to format URL:', checkoutUrl);
     return checkoutUrl;
   }
 }
