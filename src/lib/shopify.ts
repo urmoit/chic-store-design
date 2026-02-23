@@ -251,6 +251,9 @@ export async function fetchProductByHandle(handle: string) {
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
+    // Always use the .myshopify.com permanent domain for checkout
+    // because the custom domain may point to Lovable, not Shopify
+    url.hostname = SHOPIFY_STORE_PERMANENT_DOMAIN;
     url.searchParams.set('channel', 'online_store');
     return url.toString();
   } catch {
