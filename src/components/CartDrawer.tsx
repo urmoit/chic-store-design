@@ -1,39 +1,23 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ArrowRight, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
-import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export const CartDrawer = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart, getTotalItems, getTotalPrice } = useCartStore();
+  const { items, isLoading, isSyncing, updateQuantity, removeItem, syncCart, getTotalItems, getTotalPrice } = useCartStore();
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
 
   useEffect(() => { 
     if (isOpen) syncCart(); 
   }, [isOpen, syncCart]);
-
-  const handleCheckout = async () => {
-    try {
-      // Sync first to make sure cart is still valid
-      await syncCart();
-      const checkoutUrl = getCheckoutUrl();
-      if (checkoutUrl) {
-        window.open(checkoutUrl, '_blank');
-        setIsOpen(false);
-      } else {
-        toast.error(t('cart.checkoutError') || 'Checkout is not available right now. Please try again.');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast.error(t('cart.checkoutError') || 'Checkout is not available right now. Please try again.');
-    }
-  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -51,7 +35,7 @@ export const CartDrawer = () => {
         <SheetHeader className="flex-shrink-0">
           <SheetTitle className="text-xl">{t('cart.title')}</SheetTitle>
           <SheetDescription>
-            {totalItems === 0 ? t('cart.empty') : `${totalItems} item${totalItems !== 1 ? 's' : ''}`}
+            {totalItems === 0 ? t('cart.empty') : `${totalItems} ${totalItems === 1 ? t('wishlist.item') : t('wishlist.items')}`}
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col flex-1 pt-6 min-h-0">
@@ -122,23 +106,37 @@ export const CartDrawer = () => {
               <div className="flex-shrink-0 space-y-4 pt-6 border-t border-border bg-background">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-medium">{t('cart.subtotal')}</span>
-                  <span className="text-xl font-bold">{items[0]?.price.currencyCode || 'USD'} {totalPrice.toFixed(2)}</span>
+                  <span className="text-xl font-bold">{items[0]?.price.currencyCode || 'EUR'} {totalPrice.toFixed(2)}</span>
                 </div>
-                <Button 
-                  onClick={handleCheckout} 
-                  className="w-full" 
-                  size="lg" 
-                  disabled={items.length === 0 || isLoading || isSyncing}
-                >
-                  {isLoading || isSyncing ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      {t('cart.checkout')}
-                    </>
-                  )}
-                </Button>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/cart');
+                    }}
+                  >
+                    {t('cart.viewCart')}
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/checkout');
+                    }}
+                    size="lg" 
+                    disabled={items.length === 0 || isLoading || isSyncing}
+                  >
+                    {isLoading || isSyncing ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        {t('cart.checkout')}
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </>
           )}
