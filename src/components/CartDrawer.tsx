@@ -18,12 +18,19 @@ export const CartDrawer = () => {
     if (isOpen) syncCart(); 
   }, [isOpen, syncCart]);
 
-  const handleCheckout = () => {
-    const checkoutUrl = getCheckoutUrl();
-    if (checkoutUrl) {
-      window.open(checkoutUrl, '_blank');
-      setIsOpen(false);
-    } else {
+  const handleCheckout = async () => {
+    try {
+      // Sync first to make sure cart is still valid
+      await syncCart();
+      const checkoutUrl = getCheckoutUrl();
+      if (checkoutUrl) {
+        window.open(checkoutUrl, '_blank');
+        setIsOpen(false);
+      } else {
+        toast.error(t('cart.checkoutError') || 'Checkout is not available right now. Please try again.');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
       toast.error(t('cart.checkoutError') || 'Checkout is not available right now. Please try again.');
     }
   };

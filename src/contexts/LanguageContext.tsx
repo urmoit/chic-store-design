@@ -83,7 +83,8 @@ const translations = {
     'product.chestMeasure': 'Measure around the fullest part of your chest',
     'product.waistMeasure': 'Measure around your natural waistline',
     'product.hipsMeasure': 'Measure around the fullest part of your hips',
-    'product.relatedProducts': 'You May Also Like',
+     'product.relatedProducts': 'You May Also Like',
+    'product.buyNow': 'Buy Now',
     
     // Wishlist
     'wishlist.added': 'Added to wishlist',
@@ -268,6 +269,7 @@ const translations = {
     'product.waistMeasure': 'Mõõda ümber oma loomuliku vöökoha',
     'product.hipsMeasure': 'Mõõda ümber puusade täidlaseima osa',
     'product.relatedProducts': 'Sulle võib meeldida ka',
+    'product.buyNow': 'Osta kohe',
     
     // Wishlist
     'wishlist.added': 'Lisatud soovinimekirja',

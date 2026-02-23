@@ -16,14 +16,6 @@ import { ImageZoom } from '@/components/ImageZoom';
 import { ArrowLeft, Minus, Plus, Loader2, ShoppingBag, Truck, RotateCcw, Shield, ExternalLink, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
-const SHOP_APP_STORE_URL = 'https://shop.app/m/04a7c9zdw5?dynamicFilterVAvailability=%7B"available"%3Atrue%7D&sortBy=MOST_SALES';
-
-// Shop App Icon
-const ShopAppIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-  </svg>
-);
 
 // Parse and format product description into sections
 const formatProductDescription = (text: string) => {
@@ -194,8 +186,25 @@ export default function ProductPage() {
     });
   };
 
-  const handleBuyWithShopApp = () => {
-    window.open(SHOP_APP_STORE_URL, '_blank');
+  const handleBuyNow = async () => {
+    if (!selectedVariant?.availableForSale) return;
+    
+    await addItem({
+      product: { node: product },
+      variantId: selectedVariant.id,
+      variantTitle: selectedVariant.title,
+      price: selectedVariant.price,
+      quantity,
+      selectedOptions: selectedVariant.selectedOptions || []
+    });
+
+    // Small delay to ensure cart is created, then checkout
+    const checkoutUrl = useCartStore.getState().getCheckoutUrl();
+    if (checkoutUrl) {
+      window.open(checkoutUrl, '_blank');
+    } else {
+      toast.error(t('cart.checkoutError'));
+    }
   };
 
   const wishlistProduct = {
@@ -316,19 +325,31 @@ export default function ProductPage() {
                       {option.name.toLowerCase() === 'size' && <SizeGuide />}
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {option.values.map((value: string) => (
-                        <button
-                          key={value}
-                          onClick={() => handleOptionChange(option.name, value)}
-                          className={`px-5 py-3 rounded-xl border text-sm font-medium transition-all ${
-                            selectedOptions[option.name] === value
-                              ? 'border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                              : 'border-border bg-secondary/50 hover:border-muted-foreground hover:bg-secondary'
-                          }`}
-                        >
-                          {value}
-                        </button>
-                      ))}
+                      {option.values.map((value: string) => {
+                        const isAvailable = variants.some(
+                          (v: { node: { availableForSale: boolean; selectedOptions: Array<{ name: string; value: string }> } }) =>
+                            v.node.availableForSale &&
+                            v.node.selectedOptions.some(
+                              (opt) => opt.name === option.name && opt.value === value
+                            )
+                        );
+                        return (
+                          <button
+                            key={value}
+                            onClick={() => isAvailable && handleOptionChange(option.name, value)}
+                            disabled={!isAvailable}
+                            className={`px-5 py-3 rounded-xl border text-sm font-medium transition-all ${
+                              !isAvailable
+                                ? 'border-border bg-secondary/20 text-muted-foreground/40 cursor-not-allowed line-through'
+                                : selectedOptions[option.name] === value
+                                  ? 'border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                  : 'border-border bg-secondary/50 hover:border-muted-foreground hover:bg-secondary'
+                            }`}
+                          >
+                            {value}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -382,16 +403,22 @@ export default function ProductPage() {
                   <WishlistButton product={wishlistProduct} />
                 </div>
 
-                {/* Shop App Button */}
+                {/* Buy Now Button */}
                 <Button
                   size="lg"
                   variant="outline"
                   className="w-full py-7 text-base font-semibold rounded-xl border-2"
-                  onClick={handleBuyWithShopApp}
+                  onClick={handleBuyNow}
+                  disabled={cartLoading || !selectedVariant?.availableForSale}
                 >
-                  <ShopAppIcon className="h-5 w-5 mr-2" />
-                  Buy with Shop
-                  <ExternalLink className="h-4 w-4 ml-2 opacity-50" />
+                  {cartLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <>
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      {t('product.buyNow')}
+                    </>
+                  )}
                 </Button>
               </div>
 
