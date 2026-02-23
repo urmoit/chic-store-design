@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
+import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export const CartDrawer = () => {
@@ -22,6 +23,8 @@ export const CartDrawer = () => {
     if (checkoutUrl) {
       window.open(checkoutUrl, '_blank');
       setIsOpen(false);
+    } else {
+      toast.error(t('cart.checkoutError') || 'Checkout is not available right now. Please try again.');
     }
   };
 
