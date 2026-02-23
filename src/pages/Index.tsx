@@ -2,11 +2,9 @@ import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { Footer } from '@/components/Footer';
-import { useCartSync } from '@/hooks/useCartSync';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 const Index = () => {
-  useCartSync();
   usePageTitle();
   
   return (
