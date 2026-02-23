@@ -6,6 +6,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { ProductFilters, FilterState } from '@/components/ProductFilters';
 import { useProducts } from '@/hooks/useProducts';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShopifyProduct } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +15,7 @@ import { Button } from '@/components/ui/button';
 
 export default function CollectionsPage() {
   const { t } = useLanguage();
+  usePageTitle('Collections');
   const { data: products, isLoading, error } = useProducts(100);
   const [filters, setFilters] = useState<FilterState>({
     category: 'all',

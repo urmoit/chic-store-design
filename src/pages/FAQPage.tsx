@@ -1,6 +1,7 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +13,7 @@ import { Mail } from 'lucide-react';
 
 export default function FAQPage() {
   const { t } = useLanguage();
+  usePageTitle('FAQ');
 
   const faqs = [
     { q: t('faq.q1'), a: t('faq.a1') },
