@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useProduct } from '@/hooks/useProducts';
 import { useCartStore } from '@/stores/cartStore';
@@ -186,6 +186,8 @@ export default function ProductPage() {
     });
   };
 
+  const navigate = useNavigate();
+
   const handleBuyNow = async () => {
     if (!selectedVariant?.availableForSale) return;
     
@@ -198,13 +200,7 @@ export default function ProductPage() {
       selectedOptions: selectedVariant.selectedOptions || []
     });
 
-    // Small delay to ensure cart is created, then checkout
-    const checkoutUrl = useCartStore.getState().getCheckoutUrl();
-    if (checkoutUrl) {
-      window.open(checkoutUrl, '_blank');
-    } else {
-      toast.error(t('cart.checkoutError'));
-    }
+    navigate('/checkout');
   };
 
   const wishlistProduct = {
