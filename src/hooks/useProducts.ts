@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts, fetchProductByHandle, ShopifyProduct } from '@/lib/shopify';
 
-export function useProducts(first: number = 50, query?: string) {
+export function useProducts(first: number = 250, query?: string) {
   return useQuery({
     queryKey: ['products', first, query],
     queryFn: () => fetchProducts(first, query),

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ProductCard } from '@/components/ProductCard';
@@ -10,13 +9,24 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShopifyProduct } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
-import { Grid3X3, LayoutGrid } from 'lucide-react';
+import { Grid3X3, LayoutGrid, Shirt, Baby, Snowflake, Palette, Footprints } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+// Category display config with icons and order
+const CATEGORY_CONFIG: Record<string, { icon: React.ElementType; order: number }> = {
+  'T-Shirt': { icon: Shirt, order: 1 },
+  'Hoodie': { icon: Snowflake, order: 2 },
+  'Sweatshirt': { icon: Shirt, order: 3 },
+  'Kids clothes': { icon: Baby, order: 4 },
+  'All Over Prints': { icon: Palette, order: 5 },
+  'Outerwear': { icon: Snowflake, order: 6 },
+  'Trousers': { icon: Footprints, order: 7 },
+};
 
 export default function CollectionsPage() {
   const { t } = useLanguage();
   usePageTitle('Collections');
-  const { data: products, isLoading, error } = useProducts(100);
+  const { data: products, isLoading, error } = useProducts(250);
   const [filters, setFilters] = useState<FilterState>({
     category: 'all',
     priceRange: 'all',
@@ -24,7 +34,7 @@ export default function CollectionsPage() {
   });
   const [gridSize, setGridSize] = useState<'normal' | 'large'>('normal');
 
-  // Extract unique categories from products
+  // Extract unique categories sorted by config order
   const categories = useMemo(() => {
     if (!products) return [];
     const categorySet = new Set<string>();
@@ -32,7 +42,11 @@ export default function CollectionsPage() {
       const productType = product.node.productType || 'Other';
       if (productType) categorySet.add(productType);
     });
-    return Array.from(categorySet).sort();
+    return Array.from(categorySet).sort((a, b) => {
+      const orderA = CATEGORY_CONFIG[a]?.order ?? 99;
+      const orderB = CATEGORY_CONFIG[b]?.order ?? 99;
+      return orderA - orderB;
+    });
   }, [products]);
 
   // Get category counts
@@ -49,10 +63,8 @@ export default function CollectionsPage() {
   // Filter and sort products
   const filteredProducts = useMemo(() => {
     if (!products) return [];
-
     let result = [...products];
 
-    // Filter by category
     if (filters.category !== 'all') {
       result = result.filter((product: ShopifyProduct) => {
         const productType = product.node.productType || 'Other';
@@ -60,38 +72,25 @@ export default function CollectionsPage() {
       });
     }
 
-    // Filter by price range
     if (filters.priceRange !== 'all') {
       result = result.filter((product: ShopifyProduct) => {
         const price = parseFloat(product.node.priceRange.minVariantPrice.amount);
         switch (filters.priceRange) {
-          case '0-25':
-            return price >= 0 && price < 25;
-          case '25-50':
-            return price >= 25 && price < 50;
-          case '50-100':
-            return price >= 50 && price < 100;
-          case '100+':
-            return price >= 100;
-          default:
-            return true;
+          case '0-25': return price >= 0 && price < 25;
+          case '25-50': return price >= 25 && price < 50;
+          case '50-100': return price >= 50 && price < 100;
+          case '100+': return price >= 100;
+          default: return true;
         }
       });
     }
 
-    // Sort products
     switch (filters.sortBy) {
       case 'price-asc':
-        result.sort((a, b) => 
-          parseFloat(a.node.priceRange.minVariantPrice.amount) - 
-          parseFloat(b.node.priceRange.minVariantPrice.amount)
-        );
+        result.sort((a, b) => parseFloat(a.node.priceRange.minVariantPrice.amount) - parseFloat(b.node.priceRange.minVariantPrice.amount));
         break;
       case 'price-desc':
-        result.sort((a, b) => 
-          parseFloat(b.node.priceRange.minVariantPrice.amount) - 
-          parseFloat(a.node.priceRange.minVariantPrice.amount)
-        );
+        result.sort((a, b) => parseFloat(b.node.priceRange.minVariantPrice.amount) - parseFloat(a.node.priceRange.minVariantPrice.amount));
         break;
       case 'name-asc':
         result.sort((a, b) => a.node.title.localeCompare(b.node.title));
@@ -104,55 +103,72 @@ export default function CollectionsPage() {
     return result;
   }, [products, filters]);
 
+  const getCategoryLabel = (category: string) => {
+    const key = `collections.category.${category.toLowerCase().replace(/\s+/g, '')}`;
+    const translated = t(key);
+    return translated !== key ? translated : category;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-24 pb-20">
         {/* Hero Section */}
-        <section className="py-12 bg-gradient-to-b from-secondary/30 to-background">
+        <section className="py-16 bg-gradient-to-b from-secondary/40 to-background">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
               {t('collections.title')}
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               {t('collections.subtitle')}
             </p>
+            {!isLoading && products && (
+              <p className="text-sm text-muted-foreground mt-3">
+                {products.length} {t('collections.totalProducts')}
+              </p>
+            )}
           </div>
         </section>
 
-        {/* Category Pills */}
-        <section className="py-6 border-b border-border">
+        {/* Category Cards */}
+        <section className="py-8 border-b border-border">
           <div className="container mx-auto px-4">
-            <div className="flex flex-wrap gap-3 justify-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               <button
                 onClick={() => setFilters(prev => ({ ...prev, category: 'all' }))}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+                className={`group relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
                   filters.category === 'all'
-                    ? 'bg-primary text-primary-foreground shadow-lg'
-                    : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground border-primary shadow-lg scale-[1.02]'
+                    : 'bg-card text-card-foreground border-border hover:border-primary/50 hover:shadow-md'
                 }`}
               >
-                All Products
-                <Badge variant="secondary" className="ml-2 bg-background/50">
+                <Grid3X3 className="h-5 w-5" />
+                <span className="text-sm font-medium">{t('collections.allProducts')}</span>
+                <Badge variant={filters.category === 'all' ? 'outline' : 'secondary'} className="text-xs">
                   {categoryCounts.all || 0}
                 </Badge>
               </button>
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setFilters(prev => ({ ...prev, category }))}
-                  className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
-                    filters.category === category
-                      ? 'bg-primary text-primary-foreground shadow-lg'
-                      : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
-                  }`}
-                >
-                  {category}
-                  <Badge variant="secondary" className="ml-2 bg-background/50">
-                    {categoryCounts[category] || 0}
-                  </Badge>
-                </button>
-              ))}
+              {categories.map((category) => {
+                const config = CATEGORY_CONFIG[category];
+                const Icon = config?.icon || Shirt;
+                return (
+                  <button
+                    key={category}
+                    onClick={() => setFilters(prev => ({ ...prev, category }))}
+                    className={`group relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
+                      filters.category === category
+                        ? 'bg-primary text-primary-foreground border-primary shadow-lg scale-[1.02]'
+                        : 'bg-card text-card-foreground border-border hover:border-primary/50 hover:shadow-md'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span className="text-sm font-medium text-center leading-tight">{getCategoryLabel(category)}</span>
+                    <Badge variant={filters.category === category ? 'outline' : 'secondary'} className="text-xs">
+                      {categoryCounts[category] || 0}
+                    </Badge>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -166,7 +182,6 @@ export default function CollectionsPage() {
                 <p className="text-sm text-muted-foreground">
                   {filteredProducts.length} {t('collections.items')}
                 </p>
-                {/* Grid Size Toggle */}
                 <div className="hidden md:flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
                   <Button
                     variant={gridSize === 'normal' ? 'secondary' : 'ghost'}
@@ -186,8 +201,6 @@ export default function CollectionsPage() {
                   </Button>
                 </div>
               </div>
-              
-              {/* Filters */}
               <ProductFilters 
                 filters={filters} 
                 onFilterChange={setFilters}
@@ -203,7 +216,7 @@ export default function CollectionsPage() {
                   ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
                   : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
               }`}>
-                {Array.from({ length: 8 }).map((_, i) => (
+                {Array.from({ length: 12 }).map((_, i) => (
                   <div key={i} className="space-y-4">
                     <Skeleton className="aspect-[3/4] rounded-lg" />
                     <Skeleton className="h-4 w-3/4" />
@@ -233,7 +246,7 @@ export default function CollectionsPage() {
                   className="mt-4"
                   onClick={() => setFilters({ category: 'all', priceRange: 'all', sortBy: 'default' })}
                 >
-                  Clear Filters
+                  {t('filter.clearFilters')}
                 </Button>
               </div>
             )}
