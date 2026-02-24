@@ -160,6 +160,15 @@ const translations = {
     'collections.subtitle': 'Browse our curated collections',
     'collections.viewAll': 'View All',
     'collections.items': 'items',
+    'collections.totalProducts': 'products in total',
+    'collections.allProducts': 'All Products',
+    'collections.category.t-shirt': 'T-Shirts',
+    'collections.category.hoodie': 'Hoodies',
+    'collections.category.sweatshirt': 'Sweatshirts',
+    'collections.category.kidsclothes': 'Kids',
+    'collections.category.alloverprints': 'All Over Prints',
+    'collections.category.outerwear': 'Outerwear',
+    'collections.category.trousers': 'Trousers',
     
     // FAQ Page
     'faq.title': 'FAQ',
@@ -371,6 +380,15 @@ const translations = {
     'collections.subtitle': 'Sirvi meie valikut',
     'collections.viewAll': 'Vaata kõiki',
     'collections.items': 'toodet',
+    'collections.totalProducts': 'toodet kokku',
+    'collections.allProducts': 'Kõik tooted',
+    'collections.category.t-shirt': 'T-särgid',
+    'collections.category.hoodie': 'Kapuutsiga',
+    'collections.category.sweatshirt': 'Dressipluusid',
+    'collections.category.kidsclothes': 'Lasteriided',
+    'collections.category.alloverprints': 'Ületrükid',
+    'collections.category.outerwear': 'Ülerõivad',
+    'collections.category.trousers': 'Püksid',
     
     // FAQ Page
     'faq.title': 'KKK',
